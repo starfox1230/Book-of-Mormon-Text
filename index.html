@@ -12,13 +12,6 @@
         label, select, input {
             margin-right: 10px;
         }
-        #scripture-text {
-            width: 100%;
-            height: 300px;
-            margin-top: 20px;
-            padding: 10px;
-            font-size: 14px;
-        }
         button {
             padding: 10px;
             font-size: 16px;
@@ -27,7 +20,7 @@
 </head>
 <body>
 
-    <h1>Book of Mormon Scripture Copier</h1>
+    <h1>Book of Mormon Scripture Viewer</h1>
 
     <!-- Book selection -->
     <label for="book">Select Book:</label>
@@ -49,64 +42,21 @@
         <option value="moroni">Moroni</option>
     </select>
 
-    <!-- Chapter range selection -->
-    <label for="start-chapter">Start Chapter:</label>
-    <input type="number" id="start-chapter" value="1" min="1">
-    <label for="end-chapter">End Chapter (optional):</label>
-    <input type="number" id="end-chapter" min="1">
+    <!-- Chapter selection -->
+    <label for="chapter">Chapter:</label>
+    <input type="number" id="chapter" value="1" min="1">
 
-    <!-- Button to fetch and copy scripture -->
-    <button id="fetch-scripture-btn">Fetch Scripture</button>
-    <button id="copy-btn">Copy to Clipboard</button>
-
-    <!-- Text box to display scripture -->
-    <textarea id="scripture-text" readonly></textarea>
+    <!-- Button to open scripture -->
+    <button id="open-scripture-btn">Open Scripture</button>
 
     <script>
-        document.getElementById('fetch-scripture-btn').addEventListener('click', function() {
+        document.getElementById('open-scripture-btn').addEventListener('click', function() {
             const book = document.getElementById('book').value;
-            const startChapter = document.getElementById('start-chapter').value;
-            const endChapter = document.getElementById('end-chapter').value || startChapter;
+            const chapter = document.getElementById('chapter').value;
+            const url = `https://openscriptureapi.org/api/scriptures/v1/lds/en/volume/bookofmormon/${book}/${chapter}`;
 
-            let scriptureText = '';
-            const fetchPromises = [];
-
-            // Loop through the chapters from start to end
-            for (let chapter = startChapter; chapter <= endChapter; chapter++) {
-                // Use alternative CORS proxy
-                const url = `https://thingproxy.freeboard.io/fetch/https://openscriptureapi.org/api/scriptures/v1/lds/en/volume/bookofmormon/${book}/${chapter}`;
-                fetchPromises.push(
-                    fetch(url)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error(`HTTP error! Status: ${response.status}`);
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        const chapterData = data.chapter;
-                        scriptureText += `\n\n${chapterData.bookTitle} Chapter ${chapterData.number}\n\n`;
-                        chapterData.verses.forEach((verse, index) => {
-                            scriptureText += `${index + 1}. ${verse.text}\n`;
-                        });
-                    })
-                    .catch(error => {
-                        scriptureText += `\nError fetching chapter ${chapter}: ${error.message}`;
-                    })
-                );
-            }
-
-            // Wait for all fetches to complete
-            Promise.all(fetchPromises).then(() => {
-                document.getElementById('scripture-text').value = scriptureText.trim();
-            });
-        });
-
-        document.getElementById('copy-btn').addEventListener('click', function() {
-            const textArea = document.getElementById('scripture-text');
-            textArea.select();
-            document.execCommand('copy');
-            alert('Text copied to clipboard!');
+            // Open the scripture URL in a new tab
+            window.open(url, '_blank');
         });
     </script>
 
