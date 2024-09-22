@@ -73,8 +73,8 @@
 
             // Loop through the chapters from start to end
             for (let chapter = startChapter; chapter <= endChapter; chapter++) {
-                // Use CORS proxy
-                const url = `https://cors-anywhere.herokuapp.com/https://openscriptureapi.org/api/scriptures/v1/lds/en/volume/bookofmormon/${book}/${chapter}`;
+                // Use alternative CORS proxy
+                const url = `https://thingproxy.freeboard.io/fetch/https://openscriptureapi.org/api/scriptures/v1/lds/en/volume/bookofmormon/${book}/${chapter}`;
                 fetchPromises.push(
                     fetch(url)
                     .then(response => {
