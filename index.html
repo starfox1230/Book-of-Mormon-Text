@@ -73,7 +73,7 @@
 
             // Loop through the chapters from start to end
             for (let chapter = startChapter; chapter <= endChapter; chapter++) {
-                const url = `https://openscriptureapi.org/api/scriptures/v1/lds/en/volume/bookofmormon/${book}/${chapter}`;
+                const url = `https://cors-anywhere.herokuapp.com/https://openscriptureapi.org/api/scriptures/v1/lds/en/volume/bookofmormon/${book}/${chapter}`;
                 fetchPromises.push(
                     fetch(url)
                     .then(response => response.json())
