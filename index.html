@@ -12,6 +12,13 @@
         label, select, input {
             margin-right: 10px;
         }
+        #scripture-text {
+            width: 100%;
+            height: 300px;
+            margin-top: 20px;
+            padding: 10px;
+            font-size: 14px;
+        }
         button {
             padding: 10px;
             font-size: 16px;
@@ -20,9 +27,8 @@
 </head>
 <body>
 
-    <h1>Book of Mormon Scripture Viewer</h1>
+    <h1>Book of Mormon Scripture Copier</h1>
 
-    <!-- Book selection -->
     <label for="book">Select Book:</label>
     <select id="book">
         <option value="1nephi">1 Nephi</option>
@@ -42,21 +48,40 @@
         <option value="moroni">Moroni</option>
     </select>
 
-    <!-- Chapter selection -->
-    <label for="chapter">Chapter:</label>
-    <input type="number" id="chapter" value="1" min="1">
+    <label for="start-chapter">Start Chapter:</label>
+    <input type="number" id="start-chapter" value="1" min="1">
 
-    <!-- Button to open scripture -->
-    <button id="open-scripture-btn">Open Scripture</button>
+    <button id="fetch-scripture-btn">Fetch Scripture</button>
+    <button id="copy-btn">Copy to Clipboard</button>
+
+    <textarea id="scripture-text" readonly></textarea>
 
     <script>
-        document.getElementById('open-scripture-btn').addEventListener('click', function() {
+        document.getElementById('fetch-scripture-btn').addEventListener('click', function() {
             const book = document.getElementById('book').value;
-            const chapter = document.getElementById('chapter').value;
-            const url = `https://openscriptureapi.org/api/scriptures/v1/lds/en/volume/bookofmormon/${book}/${chapter}`;
+            const startChapter = document.getElementById('start-chapter').value;
 
-            // Open the scripture URL in a new tab
-            window.open(url, '_blank');
+            const url = `https://your-backend-service.onrender.com/scripture/${book}/${startChapter}`;  // Replace with your Render backend URL
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    let scriptureText = `${data.chapter.bookTitle} Chapter ${data.chapter.number}\n\n`;
+                    data.chapter.verses.forEach((verse, index) => {
+                        scriptureText += `${index + 1}. ${verse.text}\n`;
+                    });
+                    document.getElementById('scripture-text').value = scriptureText;
+                })
+                .catch(error => {
+                    document.getElementById('scripture-text').value = `Error: ${error.message}`;
+                });
+        });
+
+        document.getElementById('copy-btn').addEventListener('click', function() {
+            const textArea = document.getElementById('scripture-text');
+            textArea.select();
+            document.execCommand('copy');
+            alert('Text copied to clipboard!');
         });
     </script>
 
