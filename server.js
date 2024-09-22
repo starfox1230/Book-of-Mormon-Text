@@ -1,7 +1,12 @@
 const express = require('express');
 const fetch = require('node-fetch');
+const cors = require('cors'); // Add this line
+
 const app = express();
 const port = process.env.PORT || 3000;
+
+// Use CORS middleware
+app.use(cors()); // Add this line
 
 app.get('/', (req, res) => {
     res.send('Scripture Fetcher API is running');
