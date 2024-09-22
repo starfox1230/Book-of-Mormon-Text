@@ -73,7 +73,7 @@
 
             // Loop through the chapters from start to end
             for (let chapter = startChapter; chapter <= endChapter; chapter++) {
-                const url = `https://openscriptureapi.org/api/scriptures/v1/lds/en/${book}/${chapter}`;
+                const url = `https://openscriptureapi.org/api/scriptures/v1/lds/en/volume/${book}/${chapter}`;
                 fetchPromises.push(
                     fetch(url)
                     .then(response => {
