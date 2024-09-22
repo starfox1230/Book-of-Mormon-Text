@@ -3,58 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Open Scripture API Example</title>
+    <title>Book of Mormon Scripture Copier</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            padding: 20px;
+            margin: 20px;
         }
-        #scripture-container {
+        label, select, input {
+            margin-right: 10px;
+        }
+        #scripture-text {
+            width: 100%;
+            height: 300px;
             margin-top: 20px;
+            padding: 10px;
+            font-size: 14px;
         }
-        .verse {
-            margin-bottom: 10px;
+        button {
+            padding: 10px;
+            font-size: 16px;
         }
     </style>
 </head>
 <body>
 
-    <h1>Open Scripture API: 1 Nephi, Chapter 1</h1>
-    <button id="fetch-scripture-btn">Fetch Scripture</button>
+    <h1>Book of Mormon Scripture Copier</h1>
 
-    <div id="scripture-container"></div>
+    <!-- Book selection -->
+    <label for="book">Select Book:</label>
+    <select id="book">
+        <option value="1nephi">1 Nephi</option>
+        <option value="2nephi">2 Nephi</option>
+        <option value="jacob">Jacob</option>
+        <option value="enos">Enos</option>
+        <option value="jarom">Jarom</option>
+        <option value="omni">Omni</option>
+        <option value="wordsofmormon">Words of Mormon</option>
+        <option value="mosiah">Mosiah</option>
+        <option value="alma">Alma</option>
+        <option value="helaman">Helaman</option>
+        <option value="3nephi">3 Nephi</option>
+        <option value="4nephi">4 Nephi</option>
+        <option value="mormon">Mormon</option>
+        <option value="ether">Ether</option>
+        <option value="moroni">Moroni</option>
+    </select>
+
+    <!-- Chapter range selection -->
+    <label for="start-chapter">Start Chapter:</label>
+    <input type="number" id="start-chapter" value="1" min="1">
+    <label for="end-chapter">End Chapter (optional):</label>
+    <input type="number" id="end-chapter" min="1">
+
+    <!-- Button to fetch and copy scripture -->
+    <button id="fetch-scripture-btn">Fetch Scripture</button>
+    <button id="copy-btn">Copy to Clipboard</button>
+
+    <!-- Text box to display scripture -->
+    <textarea id="scripture-text" readonly></textarea>
 
     <script>
         document.getElementById('fetch-scripture-btn').addEventListener('click', function() {
-            const url = 'https://openscriptureapi.org/api/scriptures/v1/lds/en/volume/bookofmormon/1nephi/1';
-            
-            fetch(url)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    const chapter = data.chapter;
-                    const scriptureContainer = document.getElementById('scripture-container');
-                    scriptureContainer.innerHTML = '';  // Clear any previous content
-                    
-                    const title = document.createElement('h2');
-                    title.textContent = `${chapter.bookTitle} Chapter ${chapter.number}`;
-                    scriptureContainer.appendChild(title);
+            const book = document.getElementById('book').value;
+            const startChapter = document.getElementById('start-chapter').value;
+            const endChapter = document.getElementById('end-chapter').value || startChapter;
 
-                    chapter.verses.forEach((verse, index) => {
-                        const verseElement = document.createElement('div');
-                        verseElement.className = 'verse';
-                        verseElement.textContent = `${index + 1}. ${verse.text}`;
-                        scriptureContainer.appendChild(verseElement);
-                    });
-                })
-                .catch(error => {
-                    console.error('Error fetching the scripture:', error);
-                    document.getElementById('scripture-container').textContent = 'Failed to fetch the scripture. Please try again later.';
-                });
+            let scriptureText = '';
+            const fetchPromises = [];
+
+            // Loop through the chapters from start to end
+            for (let chapter = startChapter; chapter <= endChapter; chapter++) {
+                const url = `https://openscriptureapi.org/api/scriptures/v1/lds/en/volume/bookofmormon/${book}/${chapter}`;
+                fetchPromises.push(
+                    fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        const chapterData = data.chapter;
+                        scriptureText += `\n\n${chapterData.bookTitle} Chapter ${chapterData.number}\n\n`;
+                        chapterData.verses.forEach((verse, index) => {
+                            scriptureText += `${index + 1}. ${verse.text}\n`;
+                        });
+                    })
+                    .catch(error => {
+                        scriptureText += `\nError fetching chapter ${chapter}: ${error.message}`;
+                    })
+                );
+            }
+
+            // Wait for all fetches to complete
+            Promise.all(fetchPromises).then(() => {
+                document.getElementById('scripture-text').value = scriptureText.trim();
+            });
+        });
+
+        document.getElementById('copy-btn').addEventListener('click', function() {
+            const textArea = document.getElementById('scripture-text');
+            textArea.select();
+            document.execCommand('copy');
+            alert('Text copied to clipboard!');
         });
     </script>
 
