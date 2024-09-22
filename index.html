@@ -61,7 +61,7 @@
             const book = document.getElementById('book').value;
             const startChapter = document.getElementById('start-chapter').value;
 
-            const url = `https://your-backend-service.onrender.com/scripture/${book}/${startChapter}`;  // Replace with your Render backend URL
+            const url = `https://book-of-mormon-text.onrender.com/scripture/${book}/${startChapter}`;  // Replace with your Render backend URL
 
             fetch(url)
                 .then(response => response.json())
