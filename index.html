@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Open Scripture API Example</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        #scripture-container {
+            margin-top: 20px;
+        }
+        .verse {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Open Scripture API: 1 Nephi, Chapter 1</h1>
+    <button id="fetch-scripture-btn">Fetch Scripture</button>
+
+    <div id="scripture-container"></div>
+
+    <script>
+        document.getElementById('fetch-scripture-btn').addEventListener('click', function() {
+            const url = 'https://openscriptureapi.org/api/scriptures/v1/lds/en/volume/bookofmormon/1nephi/1';
+            
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const chapter = data.chapter;
+                    const scriptureContainer = document.getElementById('scripture-container');
+                    scriptureContainer.innerHTML = '';  // Clear any previous content
+                    
+                    const title = document.createElement('h2');
+                    title.textContent = `${chapter.bookTitle} Chapter ${chapter.number}`;
+                    scriptureContainer.appendChild(title);
+
+                    chapter.verses.forEach((verse, index) => {
+                        const verseElement = document.createElement('div');
+                        verseElement.className = 'verse';
+                        verseElement.textContent = `${index + 1}. ${verse.text}`;
+                        scriptureContainer.appendChild(verseElement);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching the scripture:', error);
+                    document.getElementById('scripture-container').textContent = 'Failed to fetch the scripture. Please try again later.';
+                });
+        });
+    </script>
+
+</body>
+</html>
