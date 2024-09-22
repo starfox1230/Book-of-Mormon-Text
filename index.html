@@ -51,6 +51,9 @@
     <label for="start-chapter">Start Chapter:</label>
     <input type="number" id="start-chapter" value="1" min="1">
 
+    <label for="end-chapter">End Chapter (optional):</label>
+    <input type="number" id="end-chapter" min="1">
+
     <button id="fetch-scripture-btn">Fetch Scripture</button>
     <button id="copy-btn">Copy to Clipboard</button>
 
@@ -60,17 +63,14 @@
         document.getElementById('fetch-scripture-btn').addEventListener('click', function() {
             const book = document.getElementById('book').value;
             const startChapter = document.getElementById('start-chapter').value;
+            const endChapter = document.getElementById('end-chapter').value || startChapter; // If no end chapter is selected, fetch only the start chapter
 
-            const url = `https://book-of-mormon-text.onrender.com/scripture/${book}/${startChapter}`;  // Replace with your Render backend URL
+            const url = `https://your-backend-service.onrender.com/scripture/${book}/${startChapter}/${endChapter}`;  // Replace with your Render backend URL
 
             fetch(url)
-                .then(response => response.json())
+                .then(response => response.text()) // We are expecting plain text, not JSON
                 .then(data => {
-                    let scriptureText = `${data.chapter.bookTitle} Chapter ${data.chapter.number}\n\n`;
-                    data.chapter.verses.forEach((verse, index) => {
-                        scriptureText += `${index + 1}. ${verse.text}\n`;
-                    });
-                    document.getElementById('scripture-text').value = scriptureText;
+                    document.getElementById('scripture-text').value = data;
                 })
                 .catch(error => {
                     document.getElementById('scripture-text').value = `Error: ${error.message}`;
