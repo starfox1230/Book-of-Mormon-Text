@@ -11,13 +11,13 @@ app.get('/', (req, res) => {
     res.send('Scripture Fetcher API is running');
 });
 
-app.get('/scripture/:book/:startChapter/:endChapter?', async (req, res) => {
+app.get('/scripture/:book/:startChapter/:chapterEnd?', async (req, res) => {
     const { book } = req.params;
     const startChapter = parseInt(req.params.startChapter, 10); // Convert to integer
-    const endChapter = parseInt(req.params.endChapter || req.params.startChapter, 10); // Convert to integer, or use startChapter if endChapter is not provided
+    const chapterEnd = parseInt(req.params.chapterEnd || req.params.startChapter, 10); // Convert to integer, or use startChapter if endChapter is not provided
 
     // Ensure startChapter and endChapter are valid numbers
-    if (isNaN(startChapter) || isNaN(endChapter)) {
+    if (isNaN(startChapter) || isNaN(chapterEnd)) {
         return res.status(400).send("Invalid chapter numbers.");
     }
     let scriptureText = ''; // This will store the final result
