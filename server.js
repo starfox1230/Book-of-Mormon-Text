@@ -12,9 +12,14 @@ app.get('/', (req, res) => {
 });
 
 app.get('/scripture/:book/:startChapter/:endChapter?', async (req, res) => {
-    const { book, startChapter, endChapter } = req.params;
-    const chapterEnd = endChapter || startChapter; // Default to single chapter if no endChapter is provided
+    const { book } = req.params;
+    const startChapter = parseInt(req.params.startChapter, 10); // Convert to integer
+    const endChapter = parseInt(req.params.endChapter || req.params.startChapter, 10); // Convert to integer, or use startChapter if endChapter is not provided
 
+    // Ensure startChapter and endChapter are valid numbers
+    if (isNaN(startChapter) || isNaN(endChapter)) {
+        return res.status(400).send("Invalid chapter numbers.");
+    }
     let scriptureText = ''; // This will store the final result
 
     // Prepare an array to hold promises and ensure results are in the correct order
