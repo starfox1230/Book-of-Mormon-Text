@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
+    "download-data": "node scripts/downloadData.js",
     "start": "node server.js"
   },
   "dependencies": {
